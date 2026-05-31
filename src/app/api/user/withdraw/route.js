@@ -9,7 +9,8 @@ import User from "@/models/User";
 import Transaction from "@/models/Transaction";
 import Notification from "@/models/Notification";
 import Settings          from "@/models/Settings";
-import { notifyAdmins } from "@/lib/notifyAdmins";
+import { notifyAdmins }          from "@/lib/notifyAdmins";
+import { sendTransactionEmail } from "@/lib/email";
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
@@ -64,6 +65,12 @@ export async function POST(req) {
       `${user.firstName} ${user.lastName} requested a withdrawal of $${amount.toLocaleString()} (${coin}) to wallet: ${walletAddress.slice(0, 16)}…`,
       "withdrawal"
     );
+
+    // Email user
+    sendTransactionEmail({
+      to: user.email, name: user.firstName,
+      type: "withdrawal-pending", amount, coin, walletAddress,
+    }).catch(() => {});
 
     return NextResponse.json({ message: "Withdrawal request submitted. Pending approval.", txId: tx.txId });
   } catch (err) {

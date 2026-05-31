@@ -8,7 +8,8 @@ import { connectDB }     from "@/lib/mongodb";
 import User              from "@/models/User";
 import Transaction       from "@/models/Transaction";
 import Settings          from "@/models/Settings";
-import { notifyAdmins } from "@/lib/notifyAdmins";
+import { notifyAdmins }          from "@/lib/notifyAdmins";
+import { sendTransactionEmail } from "@/lib/email";
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
@@ -49,6 +50,12 @@ export async function POST(req) {
       `${userName} submitted a deposit of $${amount.toLocaleString()} (${coin}). Awaiting approval.`,
       "deposit"
     );
+
+    // Email user
+    sendTransactionEmail({
+      to: user.email, name: user.firstName,
+      type: "deposit-pending", amount, coin,
+    }).catch(() => {});
 
     return NextResponse.json({
       message: "Deposit request submitted. Your balance will be credited once admin approves.",

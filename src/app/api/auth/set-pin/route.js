@@ -7,6 +7,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
+import { sendWelcomeEmail } from "@/lib/email";
 
 export async function POST(req) {
   try {
@@ -22,6 +23,9 @@ export async function POST(req) {
 
     user.pinHash = await bcrypt.hash(String(pin), 12);
     await user.save();
+
+    // Send welcome email now that account is fully set up
+    sendWelcomeEmail({ to: user.email, name: user.firstName }).catch(() => {});
 
     return NextResponse.json({ message: "PIN set successfully." });
   } catch (err) {

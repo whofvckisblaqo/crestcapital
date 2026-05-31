@@ -9,6 +9,7 @@ import Transaction from "@/models/Transaction";
 import User from "@/models/User";
 import Notification from "@/models/Notification";
 import Settings from "@/models/Settings";
+import { sendTransactionEmail } from "@/lib/email";
 
 async function requireAdmin() {
   const session = await getServerSession(authOptions);
@@ -81,6 +82,10 @@ export async function PUT(req) {
         body:   `Your deposit of $${tx.amount.toLocaleString()} (${tx.coin}) has been approved and credited to your balance.`,
         type:   "deposit",
       });
+      sendTransactionEmail({
+        to: user.email, name: user.firstName,
+        type: "deposit-approved", amount: tx.amount, coin: tx.coin,
+      }).catch(() => {});
 
       // ── Referral commission on FIRST deposit ──────────────────────────────
       if (wasFirstDeposit && user.referredBy) {
@@ -123,6 +128,10 @@ export async function PUT(req) {
         body:   `Your deposit of $${tx.amount.toLocaleString()} (${tx.coin}) was rejected. ${note ? `Reason: ${note}` : "Please contact support."}`,
         type:   "deposit",
       });
+      sendTransactionEmail({
+        to: user.email, name: user.firstName,
+        type: "deposit-rejected", amount: tx.amount, coin: tx.coin, note,
+      }).catch(() => {});
     }
 
     // ── Withdrawal approval → mark withdrawn ──────────────────────────────────
@@ -135,6 +144,11 @@ export async function PUT(req) {
         body:   `Your withdrawal of $${tx.amount.toLocaleString()} (${tx.coin}) has been approved and is being processed.`,
         type:   "withdrawal",
       });
+      sendTransactionEmail({
+        to: user.email, name: user.firstName,
+        type: "withdrawal-approved", amount: tx.amount, coin: tx.coin,
+        walletAddress: tx.walletAddress || "",
+      }).catch(() => {});
     }
 
     // ── Withdrawal rejection → refund balance ────────────────────────────────
@@ -147,6 +161,11 @@ export async function PUT(req) {
         body:   `Your withdrawal of $${tx.amount.toLocaleString()} was rejected and refunded to your balance. ${note ? `Reason: ${note}` : "Please contact support."}`,
         type:   "withdrawal",
       });
+      sendTransactionEmail({
+        to: user.email, name: user.firstName,
+        type: "withdrawal-rejected", amount: tx.amount, coin: tx.coin, note,
+        walletAddress: tx.walletAddress || "",
+      }).catch(() => {});
     }
   }
 

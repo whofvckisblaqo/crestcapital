@@ -319,6 +319,104 @@ function Navbar({ onLogin, onSignup }) {
   );
 }
 
+// ─── HERO CANVAS (animated particle network) ──────────────────────────────────
+function HeroCanvas() {
+  const ref = useRef(null);
+  useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let animId;
+
+    const resize = () => {
+      canvas.width  = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const COUNT = 90;
+    const pts = Array.from({ length: COUNT }, () => ({
+      x:  Math.random() * canvas.width,
+      y:  Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.35,
+      vy: (Math.random() - 0.5) * 0.35,
+      r:  Math.random() * 1.8 + 0.8,
+      ph: Math.random() * Math.PI * 2,
+    }));
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Dark background gradient
+      const bg = ctx.createRadialGradient(
+        canvas.width * 0.5, canvas.height * 0.35, 0,
+        canvas.width * 0.5, canvas.height * 0.35, canvas.width * 0.75
+      );
+      bg.addColorStop(0, "rgba(8,20,42,0.98)");
+      bg.addColorStop(1, "rgba(5,13,26,1)");
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Move particles
+      pts.forEach(p => {
+        p.x  += p.vx;
+        p.y  += p.vy;
+        p.ph += 0.018;
+        if (p.x < 0 || p.x > canvas.width)  p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      });
+
+      // Draw connections
+      for (let i = 0; i < pts.length; i++) {
+        for (let j = i + 1; j < pts.length; j++) {
+          const dx   = pts[i].x - pts[j].x;
+          const dy   = pts[i].y - pts[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 160) {
+            const a = 0.18 * (1 - dist / 160);
+            ctx.beginPath();
+            ctx.moveTo(pts[i].x, pts[i].y);
+            ctx.lineTo(pts[j].x, pts[j].y);
+            ctx.strokeStyle = `rgba(0,212,255,${a})`;
+            ctx.lineWidth = 0.7;
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Draw nodes
+      pts.forEach(p => {
+        const glow = 0.55 + Math.sin(p.ph) * 0.25;
+        // Outer glow
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 5);
+        grad.addColorStop(0, `rgba(0,212,255,${glow * 0.25})`);
+        grad.addColorStop(1, "rgba(0,212,255,0)");
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * 5, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        // Core dot
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,212,255,${glow})`;
+        ctx.fill();
+      });
+
+      animId = requestAnimationFrame(draw);
+    };
+
+    draw();
+    return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", resize); };
+  }, []);
+
+  return (
+    <canvas ref={ref} style={{
+      position:"absolute", inset:0, width:"100%", height:"100%", zIndex:0, display:"block",
+    }} />
+  );
+}
+
 // ─── HERO ─────────────────────────────────────────────────────────────────────
 function Hero({ onSignup }) {
   const [counts, setCounts] = useState({ investors:0, assets:0, countries:0, uptime:0 });
@@ -337,6 +435,9 @@ function Hero({ onSignup }) {
   return (
     <section id="top" style={{ minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center",
       justifyContent:"center", textAlign:"center", padding:"120px 5% 60px", position:"relative", overflow:"hidden" }}>
+
+      {/* Animated particle network background */}
+      <HeroCanvas />
 
       <div style={{ position:"absolute", inset:0, zIndex:0,
         backgroundImage:`linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px)`,

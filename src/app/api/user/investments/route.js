@@ -77,6 +77,7 @@ export async function GET() {
       duration:  inv.duration,
       daysLeft,
       startDate: new Date(inv.startDate).toISOString().split("T")[0],
+      endDate:   new Date(inv.endDate).toISOString().split("T")[0],
       status:    isExpired ? "completed" : inv.status,
     });
   }

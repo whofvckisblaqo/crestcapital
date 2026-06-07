@@ -240,6 +240,8 @@ const StatusBadge = ({ status }) => {
     failed:    [t.red,   t.redDim,   "Failed"   ],
     active:    [t.cyan,  t.cyanGlow2,"Active"   ],
     inactive:  [t.muted, "rgba(106,143,176,0.12)","Inactive"],
+    cancelled: [t.red,   t.redDim,   "Cancelled"],
+    frozen:    [t.gold,  t.goldDim,  "Frozen"   ],
   };
   const [c, bg, label] = map[status] || [t.muted, "transparent", status];
   return <Badge color={c} bg={bg}>{label}</Badge>;
@@ -891,7 +893,8 @@ function Invest({ setTab }) {
     finally  { setSubmitting(false); }
   };
 
-  const activeInvestments = _investments.filter(i => i.status === "active");
+  const activeInvestments    = _investments.filter(i => i.status === "active");
+  const completedInvestments = _investments.filter(i => i.status === "completed" || i.status === "cancelled");
 
   return (
     <div className="tab-content">
@@ -1074,6 +1077,52 @@ function Invest({ setTab }) {
           </div>
         )}
       </div>
+
+      {/* Investment History */}
+      {completedInvestments.length > 0 && (
+        <div style={{ background:t.navyCard, border:`1px solid ${t.navyBorder}`, borderRadius:16, padding:"24px", marginTop:28 }}>
+          <div style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:16, marginBottom:20, display:"flex", alignItems:"center", gap:10 }}>
+            Investment History
+            <span style={{ background:"rgba(255,255,255,0.07)", color:t.muted, fontSize:12,
+              fontWeight:600, padding:"3px 10px", borderRadius:20 }}>{completedInvestments.length}</span>
+          </div>
+          <div style={{ overflowX:"auto" }}>
+            <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+              <thead>
+                <tr>
+                  {["Plan","Invested","Total Earned","Daily Rate","Duration","Started","Ended","Status"].map(h => (
+                    <th key={h} style={{ textAlign:"left", color:t.muted, fontWeight:600, fontSize:11,
+                      letterSpacing:"0.5px", padding:"0 12px 12px 0", borderBottom:`1px solid ${t.navyBorder}`,
+                      whiteSpace:"nowrap" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {completedInvestments.map((inv, i) => {
+                  const planName = typeof inv.plan === "object" ? inv.plan?.name : inv.plan;
+                  const planColor = _plans.find(p => p.name === planName)?.color || t.muted;
+                  return (
+                    <tr key={i} style={{ borderBottom:`1px solid ${t.navyBorder}` }}
+                      onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.02)"}
+                      onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                      <td style={{ padding:"14px 12px 14px 0", fontWeight:600, color:planColor, whiteSpace:"nowrap" }}>
+                        {planName} Plan
+                      </td>
+                      <td style={{ padding:"14px 12px 14px 0", fontWeight:600 }}>{fmt(inv.amount)}</td>
+                      <td style={{ padding:"14px 12px 14px 0", fontWeight:700, color:t.green }}>{fmt(inv.earned || 0)}</td>
+                      <td style={{ padding:"14px 12px 14px 0", color:t.muted }}>{inv.rate}% / day</td>
+                      <td style={{ padding:"14px 12px 14px 0", color:t.muted }}>{inv.duration} days</td>
+                      <td style={{ padding:"14px 12px 14px 0", color:t.muted, whiteSpace:"nowrap" }}>{inv.startDate}</td>
+                      <td style={{ padding:"14px 12px 14px 0", color:t.muted, whiteSpace:"nowrap" }}>{inv.endDate || "—"}</td>
+                      <td style={{ padding:"14px 0 14px 0" }}><StatusBadge status={inv.status} /></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

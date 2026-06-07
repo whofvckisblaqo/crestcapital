@@ -402,7 +402,7 @@ function HeroCanvas() {
 
   return (
     <canvas ref={ref} style={{
-      position:"absolute", inset:0, width:"100%", height:"100%", zIndex:0, display:"block",
+      position:"absolute", inset:0, width:"100%", height:"100%", zIndex:2, display:"block",
     }} />
   );
 }
@@ -424,28 +424,24 @@ function Hero({ onSignup }) {
 
   return (
     <section id="top" style={{ minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center",
-      justifyContent:"center", textAlign:"center", padding:"120px 5% 60px", position:"relative", overflow:"hidden" }}>
-
-      {/* Hero background photo */}
-      <div style={{ position:"absolute", inset:0, zIndex:0,
-        backgroundImage:"url('/hero-bg.png')",
-        backgroundSize:"cover", backgroundPosition:"center", backgroundRepeat:"no-repeat" }} />
+      justifyContent:"center", textAlign:"center", padding:"120px 5% 60px", position:"relative", overflow:"hidden",
+      backgroundImage:"url('/hero-bg.png')", backgroundSize:"cover", backgroundPosition:"center" }}>
 
       {/* Dark overlay to preserve readability */}
-      <div style={{ position:"absolute", inset:0, zIndex:0,
-        background:"linear-gradient(180deg,rgba(4,10,28,0.72) 0%,rgba(4,10,28,0.55) 50%,rgba(4,10,28,0.82) 100%)" }} />
+      <div style={{ position:"absolute", inset:0, zIndex:1,
+        background:"linear-gradient(180deg,rgba(4,10,28,0.75) 0%,rgba(4,10,28,0.6) 50%,rgba(4,10,28,0.85) 100%)" }} />
 
       {/* Animated particle network background */}
       <HeroCanvas />
 
-      <div style={{ position:"absolute", inset:0, zIndex:0,
+      <div style={{ position:"absolute", inset:0, zIndex:1,
         backgroundImage:`linear-gradient(rgba(0,212,255,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.018) 1px,transparent 1px)`,
-        backgroundSize:"64px 64px" }} />
-      <GlowOrb style={{ width:"min(700px,90vw)", height:"min(700px,90vw)", background:"rgba(0,212,255,0.04)", top:"5%", left:"50%", transform:"translateX(-50%)" }} />
-      <GlowOrb style={{ width:280, height:280, background:"rgba(0,80,200,0.08)", top:"25%", left:"3%" }} />
-      <GlowOrb style={{ width:220, height:220, background:"rgba(0,212,255,0.06)", bottom:"20%", right:"5%" }} />
+        backgroundSize:"64px 64px", pointerEvents:"none" }} />
+      <GlowOrb style={{ width:"min(700px,90vw)", height:"min(700px,90vw)", background:"rgba(0,212,255,0.04)", top:"5%", left:"50%", transform:"translateX(-50%)", zIndex:1 }} />
+      <GlowOrb style={{ width:280, height:280, background:"rgba(0,80,200,0.08)", top:"25%", left:"3%", zIndex:1 }} />
+      <GlowOrb style={{ width:220, height:220, background:"rgba(0,212,255,0.06)", bottom:"20%", right:"5%", zIndex:1 }} />
 
-      <div style={{ position:"relative", zIndex:1, animation:"fadeUp .7s ease both", width:"100%" }}>
+      <div style={{ position:"relative", zIndex:3, animation:"fadeUp .7s ease both", width:"100%" }}>
         {/* Badge */}
         <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:t.cyanGlow2,
           border:`1px solid rgba(0,212,255,0.22)`, borderRadius:100, padding:"6px 18px",

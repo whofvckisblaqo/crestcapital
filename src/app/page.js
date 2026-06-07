@@ -348,16 +348,6 @@ function HeroCanvas() {
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Dark background gradient
-      const bg = ctx.createRadialGradient(
-        canvas.width * 0.5, canvas.height * 0.35, 0,
-        canvas.width * 0.5, canvas.height * 0.35, canvas.width * 0.75
-      );
-      bg.addColorStop(0, "rgba(8,20,42,0.98)");
-      bg.addColorStop(1, "rgba(5,13,26,1)");
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
       // Move particles
       pts.forEach(p => {
         p.x  += p.vx;

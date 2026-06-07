@@ -436,15 +436,24 @@ function Hero({ onSignup }) {
     <section id="top" style={{ minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center",
       justifyContent:"center", textAlign:"center", padding:"120px 5% 60px", position:"relative", overflow:"hidden" }}>
 
+      {/* Hero background photo */}
+      <div style={{ position:"absolute", inset:0, zIndex:0,
+        backgroundImage:"url('/hero-bg.png')",
+        backgroundSize:"cover", backgroundPosition:"center", backgroundRepeat:"no-repeat" }} />
+
+      {/* Dark overlay to preserve readability */}
+      <div style={{ position:"absolute", inset:0, zIndex:0,
+        background:"linear-gradient(180deg,rgba(4,10,28,0.72) 0%,rgba(4,10,28,0.55) 50%,rgba(4,10,28,0.82) 100%)" }} />
+
       {/* Animated particle network background */}
       <HeroCanvas />
 
       <div style={{ position:"absolute", inset:0, zIndex:0,
-        backgroundImage:`linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px)`,
+        backgroundImage:`linear-gradient(rgba(0,212,255,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.018) 1px,transparent 1px)`,
         backgroundSize:"64px 64px" }} />
-      <GlowOrb style={{ width:"min(700px,90vw)", height:"min(700px,90vw)", background:"rgba(0,212,255,0.06)", top:"5%", left:"50%", transform:"translateX(-50%)" }} />
-      <GlowOrb style={{ width:280, height:280, background:"rgba(0,80,200,0.12)", top:"25%", left:"3%" }} />
-      <GlowOrb style={{ width:220, height:220, background:"rgba(0,212,255,0.09)", bottom:"20%", right:"5%" }} />
+      <GlowOrb style={{ width:"min(700px,90vw)", height:"min(700px,90vw)", background:"rgba(0,212,255,0.04)", top:"5%", left:"50%", transform:"translateX(-50%)" }} />
+      <GlowOrb style={{ width:280, height:280, background:"rgba(0,80,200,0.08)", top:"25%", left:"3%" }} />
+      <GlowOrb style={{ width:220, height:220, background:"rgba(0,212,255,0.06)", bottom:"20%", right:"5%" }} />
 
       <div style={{ position:"relative", zIndex:1, animation:"fadeUp .7s ease both", width:"100%" }}>
         {/* Badge */}

@@ -424,8 +424,11 @@ function Hero({ onSignup }) {
 
   return (
     <section id="top" style={{ minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center",
-      justifyContent:"center", textAlign:"center", padding:"120px 5% 60px", position:"relative", overflow:"hidden",
-      backgroundImage:"url('/hero-bg.png')", backgroundSize:"cover", backgroundPosition:"center" }}>
+      justifyContent:"center", textAlign:"center", padding:"120px 5% 60px", position:"relative", overflow:"hidden" }}>
+
+      {/* Hero background photo */}
+      <img src="/hero-bg.png" alt="" aria-hidden="true"
+        style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover", zIndex:0, display:"block" }} />
 
       {/* Dark overlay to preserve readability */}
       <div style={{ position:"absolute", inset:0, zIndex:1,
